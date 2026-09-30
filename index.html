@@ -149,7 +149,7 @@
 
   <nav class="services" aria-label="Listen on">
     <a class="service apple" id="apple" href="#"><span class="mark">&#9835;</span>Apple Music<span class="how" id="appleHow">Search</span></a>
-    <a class="service spotify" id="spotify" href="#"><span class="mark">S</span>Spotify<span class="how">Search in app</span></a>
+    <a class="service spotify" id="spotify" href="#"><span class="mark">S</span>Spotify<span class="how">Search</span></a>
     <a class="service tidal" id="tidal" href="#"><span class="mark">&#9670;</span>TIDAL<span class="how" id="tidalHow">Search</span></a>
     <a class="service youtube" id="youtube" href="#"><span class="mark">&#9654;</span>YouTube Music<span class="how">Search</span></a>
     <a class="service deezer" id="deezer" href="#"><span class="mark">D</span>Deezer<span class="how" id="deezerHow">Search</span></a>
@@ -198,18 +198,9 @@
 
   // Searches work for every song on every service.
   $("apple").href = `https://music.apple.com/search?term=${enc(term)}`;
-  // Spotify's web search needs a login and its app ignores search web links,
-  // so open the app's own search, falling back to the website without it.
-  const spotifyWeb = `https://open.spotify.com/search/${enc(term)}`;
-  $("spotify").href = spotifyWeb;
-  $("spotify").addEventListener("click", e => {
-    e.preventDefault();
-    const started = Date.now();
-    setTimeout(() => {
-      if (!document.hidden && Date.now() - started < 2500) location.href = spotifyWeb;
-    }, 1200);
-    location.href = `spotify:search:${enc(term)}`;
-  });
+  // Spotify's app claims open.spotify.com/search/* links, so this opens the
+  // app's search when it's installed and the website otherwise.
+  $("spotify").href = `https://open.spotify.com/search/${enc(term)}`;
   // TIDAL: the exact song when the sharer's app knew it (opens the TIDAL app).
   if (tidalId) {
     $("tidal").href = `https://tidal.com/track/${tidalId}`;
