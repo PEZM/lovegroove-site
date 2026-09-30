@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Now spinning · Gramophile</title>
+<meta name="description" content="Someone's playing this on a record, CD or tape. Listen on Spotify, Apple Music, TIDAL, YouTube Music or Deezer.">
+<meta name="theme-color" content="#FAF2E6">
+<!-- Link previews (Messages, WhatsApp…). A static page can't make these per
+     song, so every shared link previews as Gramophile. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gramophile">
+<meta property="og:title" content="Now spinning on Gramophile">
+<meta property="og:description" content="Listen on Spotify, Apple Music, TIDAL, YouTube Music or Deezer.">
+<meta property="og:image" content="https://pezm.github.io/gramophile-listen/gramophile.png">
+<meta property="og:url" content="https://pezm.github.io/gramophile-listen/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="gramophile.png">
+<style>
+  :root {
+    --cream: #FAF2E6;
+    --paper: #FFF9F0;
+    --ink: #24170F;
+    --ink-soft: rgba(36, 23, 15, 0.62);
+    --red: #E8212A;
+    --brass: #EDB554;
+    --brass-deep: #9E661A;
+    --walnut: #5C3017;
+    --line: rgba(36, 23, 15, 0.1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  /* The cover, blurred into the background — like the app. */
+  .wash {
+    position: fixed; inset: -20%;
+    background-size: cover; background-position: center;
+    filter: blur(60px) saturate(1.3);
+    opacity: 0; transition: opacity .8s ease;
+    z-index: 0;
+  }
+  .wash.on { opacity: .35; }
+  main {
+    position: relative; z-index: 1;
+    max-width: 440px; margin: 0 auto;
+    padding: max(20px, env(safe-area-inset-top)) 16px 40px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 900; font-size: 20px; letter-spacing: -0.01em;
+    text-decoration: none; color: var(--ink);
+  }
+  .brand img { width: 34px; height: 34px; border-radius: 8px; box-shadow: 0 2px 6px rgba(92,48,23,.2); }
+
+  .record {
+    position: relative; width: 78%; max-width: 300px; aspect-ratio: 1;
+    margin: 28px 0 0;
+  }
+  .disc {
+    position: absolute; top: 4%; left: 22%; width: 92%; aspect-ratio: 1; border-radius: 50%;
+    background:
+      radial-gradient(circle, var(--red) 0 17%, #111 17.5% 19%, transparent 19.5%),
+      repeating-radial-gradient(circle, #151515 0 2px, #1d1d1d 2px 4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    animation: spin 6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .disc { animation: none; } }
+  .cover {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    border-radius: 6px; object-fit: cover;
+    background: var(--walnut);
+    box-shadow: 0 14px 34px rgba(36,23,15,.35);
+  }
+
+  .label {
+    margin-top: 26px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--brass-deep);
+  }
+  h1 { font-size: 34px; line-height: 1.05; font-weight: 900; margin: 8px 0 4px; letter-spacing: -0.02em; }
+  .artist { font-size: 19px; font-weight: 700; opacity: .85; margin: 0; }
+  .album { font-size: 15px; color: var(--ink-soft); margin: 4px 0 0; }
+
+  .services { margin-top: 26px; display: grid; gap: 10px; }
+  .service {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; border-radius: 16px;
+    background: rgba(255, 249, 240, .78);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 0.5px solid var(--line);
+    color: var(--ink); text-decoration: none;
+    font-size: 17px; font-weight: 700;
+    transition: transform .12s ease;
+  }
+  .service:active { transform: scale(.98); }
+  .service .mark {
+    width: 36px; height: 36px; border-radius: 9px; flex: none;
+    display: grid; place-items: center; color: #fff; font-size: 18px; font-weight: 900;
+  }
+  .service .how { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+  .apple .mark { background: linear-gradient(#FB5C74, #FA2E47); }
+  .spotify .mark { background: #1DB954; }
+  .tidal .mark { background: #000; }
+  .youtube .mark { background: #FF0000; }
+  .deezer .mark { background: #A238FF; }
+  .discogs .mark { background: #333; }
+  .service.discogs { margin-top: 8px; }
+
+  footer {
+    margin-top: 34px; padding-top: 22px; border-top: 0.5px solid var(--line);
+    font-size: 14px; color: var(--ink-soft); line-height: 1.45;
+  }
+  footer strong { color: var(--ink); }
+  .get {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 14px;
+    padding: 12px 18px; border-radius: 999px;
+    background: var(--red); color: #fff; text-decoration: none; font-weight: 800; font-size: 16px;
+  }
+  .soon {
+    display: inline-block; margin-top: 12px; padding: 6px 12px; border-radius: 999px;
+    background: rgba(237,181,84,.25); color: var(--brass-deep);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wash" id="wash"></div>
+<main>
+  <a class="brand" href="#" id="brand"><img src="gramophile.png" alt=""> Gramophile</a>
+
+  <div class="record" aria-hidden="true">
+    <div class="disc"></div>
+    <img class="cover" id="cover" alt="" src="gramophile.png">
+  </div>
+
+  <div class="label" id="label">Now spinning</div>
+  <h1 id="title">A song on the turntable</h1>
+  <p class="artist" id="artist"></p>
+  <p class="album" id="album"></p>
+
+  <nav class="services" aria-label="Listen on">
+    <a class="service apple" id="apple" href="#"><span class="mark">&#9835;</span>Apple Music<span class="how" id="appleHow">Search</span></a>
+    <a class="service spotify" id="spotify" href="#"><span class="mark">S</span>Spotify<span class="how">Search</span></a>
+    <a class="service tidal" id="tidal" href="#"><span class="mark">&#9670;</span>TIDAL<span class="how">Search</span></a>
+    <a class="service youtube" id="youtube" href="#"><span class="mark">&#9654;</span>YouTube Music<span class="how">Search</span></a>
+    <a class="service deezer" id="deezer" href="#"><span class="mark">D</span>Deezer<span class="how">Search</span></a>
+    <a class="service discogs" id="discogs" href="#"><span class="mark">&#9673;</span>Find the record on Discogs</a>
+  </nav>
+
+  <footer>
+    <strong>Shared from Gramophile</strong> — it listens to the record, CD or tape you put on,
+    follows the album song by song and keeps a diary of everything you play.
+    <div><a class="get" id="get" href="#" hidden>Get Gramophile</a></div>
+    <div><span class="soon" id="soon">Coming soon to the App Store</span></div>
+  </footer>
+</main>
+
+<script>
+// Gramophile "listen" page. The app shares links like
+//   https://pezm.github.io/gramophile-listen/?t=Space%20Song&a=Beach%20House&al=Depression%20Cherry&i=998474199&c=GB&f=vinyl
+// t = song, a = artist, al = album, i = Apple Music track id, c = store country,
+// f = what it's playing on (vinyl, CD, tape). Everything is optional except t.
+(function () {
+  const APP_ID = "6817066973";   // Gramophile on the App Store
+  const q = new URLSearchParams(location.search);
+  const title = (q.get("t") || "").trim();
+  const artist = (q.get("a") || "").trim();
+  const album = (q.get("al") || "").trim();
+  const trackId = (q.get("i") || "").replace(/\D/g, "");
+  const format = (q.get("f") || "").trim().toLowerCase();
+  const country = (q.get("c") || (navigator.language.split("-")[1] || "US")).toUpperCase().slice(0, 2);
+
+  const $ = id => document.getElementById(id);
+  const enc = encodeURIComponent;
+  const term = [title, artist].filter(Boolean).join(" ");
+
+  if (title) {
+    $("title").textContent = title;
+    document.title = `${title}${artist ? " by " + artist : ""} · Gramophile`;
+  }
+  $("artist").textContent = artist;
+  $("album").textContent = album ? `from ${album}` : "";
+  if (["vinyl", "cd", "tape", "cassette"].includes(format)) {
+    const word = format === "cd" ? "CD" : format === "cassette" ? "tape" : format;
+    $("label").textContent = `Now spinning on ${word}`;
+  }
+
+  // Searches work for every song on every service.
+  $("apple").href = `https://music.apple.com/search?term=${enc(term)}`;
+  $("spotify").href = `https://open.spotify.com/search/${enc(term)}`;
+  $("tidal").href = `https://tidal.com/search?q=${enc(term)}`;
+  $("youtube").href = `https://music.youtube.com/search?q=${enc(term)}`;
+  $("deezer").href = `https://www.deezer.com/search/${enc(term)}`;
+  $("discogs").href = `https://www.discogs.com/search/?q=${enc([artist, album || title].filter(Boolean).join(" "))}&type=release`;
+  $("brand").href = `https://apps.apple.com/app/id${APP_ID}`;
+
+  // Apple's catalogue (free, no key) gives the cover and the exact song.
+  // JSONP, because it doesn't allow cross-site fetches.
+  let n = 0;
+  function itunes(params, done) {
+    const cb = `gramophile_${n++}`;
+    const s = document.createElement("script");
+    window[cb] = data => { done(data); delete window[cb]; s.remove(); };
+    s.onerror = () => { delete window[cb]; s.remove(); };
+    s.src = `https://itunes.apple.com/${params}&callback=${cb}`;
+    document.head.appendChild(s);
+  }
+  function show(result) {
+    if (!result) return;
+    if (result.artworkUrl100) {
+      const art = result.artworkUrl100.replace("100x100bb", "600x600bb");
+      $("cover").src = art;
+      $("wash").style.backgroundImage = `url("${art}")`;
+      $("wash").classList.add("on");
+    }
+    if (result.trackViewUrl) {
+      $("apple").href = result.trackViewUrl;
+      $("appleHow").textContent = "Open";
+    }
+    if (!album && result.collectionName) $("album").textContent = `from ${result.collectionName}`;
+  }
+  if (trackId) {
+    itunes(`lookup?id=${trackId}&country=${country}`, d => show(d.results && d.results[0]));
+  } else if (term) {
+    itunes(`search?term=${enc(term)}&entity=song&limit=1&country=${country}`, d => show(d.results && d.results[0]));
+  }
+
+  // The App Store button appears by itself once Gramophile is released.
+  itunes(`lookup?id=${APP_ID}&country=${country}`, d => {
+    if (d.resultCount > 0) {
+      $("get").href = `https://apps.apple.com/app/id${APP_ID}`;
+      $("get").hidden = false;
+      $("soon").hidden = true;
+    }
+  });
+})();
+</script>
+</body>
+</html>
