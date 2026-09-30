@@ -1,8 +1,9 @@
 # Gramophile — listen page
 
 The page a song shared from [Gramophile](https://apps.apple.com/app/id6817066973) links to.
-It shows the song and its cover, opens it on Apple Music, searches Spotify,
-TIDAL, YouTube Music and Deezer, and links to the record on Discogs.
+It shows the song and its cover and opens it on Apple Music, TIDAL (exact
+song when the link carries its id) and Deezer (looked up on the page), the
+Spotify app's search, and YouTube Music, and links to the record on Discogs.
 
 Live at **https://pezm.github.io/gramophile-listen/** (GitHub Pages, from `main`).
 
@@ -20,6 +21,7 @@ https://pezm.github.io/gramophile-listen/?t=Space%20Song&a=Beach%20House&al=Depr
 | `i`  | Apple Music track id | optional; gives the exact song and cover |
 | `c`  | Store country for Apple's lookup, e.g. `GB` | optional |
 | `f`  | What it's playing on: `vinyl`, `cd`, `tape` | optional |
+| `td` | TIDAL track id (added when the sharer has TIDAL connected) | optional; TIDAL opens the exact song |
 
 A single static file: no server, build step or keys. The cover and exact Apple
 Music song come from Apple's free iTunes lookup. Once Gramophile is on the App

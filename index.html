@@ -149,10 +149,10 @@
 
   <nav class="services" aria-label="Listen on">
     <a class="service apple" id="apple" href="#"><span class="mark">&#9835;</span>Apple Music<span class="how" id="appleHow">Search</span></a>
-    <a class="service spotify" id="spotify" href="#"><span class="mark">S</span>Spotify<span class="how">Search</span></a>
-    <a class="service tidal" id="tidal" href="#"><span class="mark">&#9670;</span>TIDAL<span class="how">Search</span></a>
+    <a class="service spotify" id="spotify" href="#"><span class="mark">S</span>Spotify<span class="how">Search in app</span></a>
+    <a class="service tidal" id="tidal" href="#"><span class="mark">&#9670;</span>TIDAL<span class="how" id="tidalHow">Search</span></a>
     <a class="service youtube" id="youtube" href="#"><span class="mark">&#9654;</span>YouTube Music<span class="how">Search</span></a>
-    <a class="service deezer" id="deezer" href="#"><span class="mark">D</span>Deezer<span class="how">Search</span></a>
+    <a class="service deezer" id="deezer" href="#"><span class="mark">D</span>Deezer<span class="how" id="deezerHow">Search</span></a>
     <a class="service discogs" id="discogs" href="#"><span class="mark">&#9673;</span>Find the record on Discogs</a>
   </nav>
 
@@ -168,7 +168,8 @@
 // Gramophile "listen" page. The app shares links like
 //   https://pezm.github.io/gramophile-listen/?t=Space%20Song&a=Beach%20House&al=Depression%20Cherry&i=998474199&c=GB&f=vinyl
 // t = song, a = artist, al = album, i = Apple Music track id, c = store country,
-// f = what it's playing on (vinyl, CD, tape). Everything is optional except t.
+// f = what it's playing on (vinyl, CD, tape), td = TIDAL track id (when the
+// sharer has TIDAL connected). Everything is optional except t.
 (function () {
   const APP_ID = "6817066973";   // Gramophile on the App Store
   const q = new URLSearchParams(location.search);
@@ -177,6 +178,7 @@
   const album = (q.get("al") || "").trim();
   const trackId = (q.get("i") || "").replace(/\D/g, "");
   const format = (q.get("f") || "").trim().toLowerCase();
+  const tidalId = (q.get("td") || "").replace(/\D/g, "");
   const country = (q.get("c") || (navigator.language.split("-")[1] || "US")).toUpperCase().slice(0, 2);
 
   const $ = id => document.getElementById(id);
@@ -196,8 +198,25 @@
 
   // Searches work for every song on every service.
   $("apple").href = `https://music.apple.com/search?term=${enc(term)}`;
-  $("spotify").href = `https://open.spotify.com/search/${enc(term)}`;
-  $("tidal").href = `https://tidal.com/search?q=${enc(term)}`;
+  // Spotify's web search needs a login and its app ignores search web links,
+  // so open the app's own search, falling back to the website without it.
+  const spotifyWeb = `https://open.spotify.com/search/${enc(term)}`;
+  $("spotify").href = spotifyWeb;
+  $("spotify").addEventListener("click", e => {
+    e.preventDefault();
+    const started = Date.now();
+    setTimeout(() => {
+      if (!document.hidden && Date.now() - started < 2500) location.href = spotifyWeb;
+    }, 1200);
+    location.href = `spotify:search:${enc(term)}`;
+  });
+  // TIDAL: the exact song when the sharer's app knew it (opens the TIDAL app).
+  if (tidalId) {
+    $("tidal").href = `https://tidal.com/track/${tidalId}`;
+    $("tidalHow").textContent = "Open";
+  } else {
+    $("tidal").href = `https://tidal.com/search?q=${enc(term)}`;
+  }
   $("youtube").href = `https://music.youtube.com/search?q=${enc(term)}`;
   $("deezer").href = `https://www.deezer.com/search/${enc(term)}`;
   $("discogs").href = `https://www.discogs.com/search/?q=${enc([artist, album || title].filter(Boolean).join(" "))}&type=release`;
@@ -206,13 +225,28 @@
   // Apple's catalogue (free, no key) gives the cover and the exact song.
   // JSONP, because it doesn't allow cross-site fetches.
   let n = 0;
-  function itunes(params, done) {
+  function jsonp(url, done) {
     const cb = `gramophile_${n++}`;
     const s = document.createElement("script");
     window[cb] = data => { done(data); delete window[cb]; s.remove(); };
     s.onerror = () => { delete window[cb]; s.remove(); };
-    s.src = `https://itunes.apple.com/${params}&callback=${cb}`;
+    s.src = `${url}&callback=${cb}`;
     document.head.appendChild(s);
+  }
+  const itunes = (params, done) => jsonp(`https://itunes.apple.com/${params}`, done);
+  const norm = s => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s*[([].*?[)\]]/g, "").replace(/ - .*$/, "").replace(/&/g, "and").replace(/[^a-z0-9 ]/g, "").trim();
+
+  // Deezer's catalogue is open: find the exact song there too.
+  if (term) {
+    jsonp(`https://api.deezer.com/search?q=${enc(term)}&limit=10&output=jsonp`, d => {
+      const hit = (d.data || []).find(r => norm(r.title) === norm(title)
+        && (!artist || norm(r.artist && r.artist.name).includes(norm(artist).split(" and ")[0])));
+      if (hit && hit.link) {
+        $("deezer").href = hit.link;
+        $("deezerHow").textContent = "Open";
+      }
+    });
   }
   function show(result) {
     if (!result) return;
