@@ -23,8 +23,10 @@ build step or keys.
 
 Email: Cloudflare Email Routing forwards **hello@lovegroove.app** to the owner's inbox.
 
-The old address, `pezm.github.io/gramophile-listen/…`, redirects here, and song links in
-the old format (`/?t=…`) forward to `/listen/` — links shared before the move still work.
+This repo was called `gramophile-listen`. The old address, `pezm.github.io/gramophile-listen/…`,
+is kept alive by a small separate repo of that name whose pages forward to the same path and
+query here; song links in the old format (`/?t=…`) then forward to `/listen/`. Links shared
+before the move, and Spotify setups that registered the old callback address, still work.
 
 ## Song link format
 
