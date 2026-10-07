@@ -31,13 +31,17 @@
   <img src="lovegroove.png" alt="">
   <h1>Connecting Spotify…</h1>
   <p>If Lovegroove doesn't open by itself, tap below.</p>
-  <a class="button" id="back" href="gramophile://spotify">Back to Lovegroove</a>
+  <a class="button" id="back" href="lovegroove://spotify">Back to Lovegroove</a>
 </main>
 <script>
   // Spotify only redirects to HTTPS pages, so this page hands the sign-in
   // (a one-time code, useless without the secret kept in the app) straight
   // back to Lovegroove.
-  const target = "gramophile://spotify" + location.search;
+  // Builds since the rename start their sign-in with a state of "lg…" and
+  // listen for lovegroove://; older ones listen for gramophile://.
+  const state = new URLSearchParams(location.search).get("state") || "";
+  const scheme = state.startsWith("lg") ? "lovegroove" : "gramophile";
+  const target = scheme + "://spotify" + location.search;
   document.getElementById("back").href = target;
   location.replace(target);
 </script>

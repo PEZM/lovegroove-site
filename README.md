@@ -9,7 +9,7 @@ build step or keys.
 | `/` (`index.html`) | Landing page. Shows an App Store button by itself once the app is released. |
 | `/listen/` (`listen/index.html`) | The page songs shared from the app open: the song, its cover, and buttons for Apple Music, Spotify, TIDAL, YouTube Music, Deezer and Discogs. |
 | `/privacy` (`privacy.html`) | Privacy policy — the URL for App Store Connect. |
-| `/spotify-callback.html` | Hands Spotify's sign-in back to the app (Spotify only redirects to HTTPS pages; the app's URL scheme is still `gramophile://`). |
+| `/spotify-callback.html` | Hands Spotify's sign-in back to the app (Spotify only redirects to HTTPS pages): to `lovegroove://`, or `gramophile://` for builds from before the rename. |
 | `CNAME` | The custom domain, `lovegroove.app`. |
 
 ## Domain
