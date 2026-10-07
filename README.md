@@ -1,16 +1,35 @@
-# Gramophile — listen page
+# lovegroove.app
 
-The page a song shared from [Gramophile](https://apps.apple.com/app/id6817066973) links to.
-It shows the song and its cover and opens it on Apple Music, TIDAL (exact
-song when the link carries its id) and Deezer (looked up on the page), the
-Spotify app's search, and YouTube Music, and links to the record on Discogs.
+The website for [Lovegroove](https://lovegroove.app) (formerly Gramophile), served by
+GitHub Pages from `main` at **https://lovegroove.app**. Plain static files: no server,
+build step or keys.
 
-Live at **https://pezm.github.io/gramophile-listen/** (GitHub Pages, from `main`).
+| Path | What it is |
+|---|---|
+| `/` (`index.html`) | Landing page. Shows an App Store button by itself once the app is released. |
+| `/listen/` (`listen/index.html`) | The page songs shared from the app open: the song, its cover, and buttons for Apple Music, Spotify, TIDAL, YouTube Music, Deezer and Discogs. |
+| `/privacy` (`privacy.html`) | Privacy policy — the URL for App Store Connect. |
+| `/spotify-callback.html` | Hands Spotify's sign-in back to the app (Spotify only redirects to HTTPS pages; the app's URL scheme is still `gramophile://`). |
+| `CNAME` | The custom domain, `lovegroove.app`. |
 
-## Link format
+## Domain
+
+`lovegroove.app` is registered with Cloudflare. DNS points at GitHub Pages and must stay
+**DNS only** (grey cloud) so GitHub can issue the HTTPS certificate:
+
+- `A @` → 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153
+- `AAAA @` → 2606:50c0:8000::153, 2606:50c0:8001::153, 2606:50c0:8002::153, 2606:50c0:8003::153
+- `CNAME www` → pezm.github.io
+
+Email: Cloudflare Email Routing forwards **hello@lovegroove.app** to the owner's inbox.
+
+The old address, `pezm.github.io/gramophile-listen/…`, redirects here, and song links in
+the old format (`/?t=…`) forward to `/listen/` — links shared before the move still work.
+
+## Song link format
 
 ```
-https://pezm.github.io/gramophile-listen/?t=Space%20Song&a=Beach%20House&al=Depression%20Cherry&i=998474199&c=GB&f=vinyl
+https://lovegroove.app/listen/?t=Space%20Song&a=Beach%20House&al=Depression%20Cherry&i=998474199&c=GB&f=vinyl
 ```
 
 | Parameter | Meaning | Required |
@@ -21,11 +40,9 @@ https://pezm.github.io/gramophile-listen/?t=Space%20Song&a=Beach%20House&al=Depr
 | `i`  | Apple Music track id | optional; gives the exact song and cover |
 | `c`  | Store country for Apple's lookup, e.g. `GB` | optional |
 | `f`  | What it's playing on: `vinyl`, `cd`, `tape` | optional |
-| `td` | TIDAL track id (added when the sharer has TIDAL connected) | optional; TIDAL opens the exact song |
+| `td` | TIDAL track id (when the sharer has TIDAL connected) | optional; TIDAL opens the exact song |
 
-A single static file: no server, build step or keys. The cover and exact Apple
-Music song come from Apple's free iTunes lookup. Once Gramophile is on the App
-Store, a "Get Gramophile" button appears by itself.
+The cover and exact Apple Music song come from Apple's free iTunes lookup.
 
 ## Try it locally
 
@@ -33,4 +50,4 @@ Store, a "Get Gramophile" button appears by itself.
 python3 -m http.server 8765
 ```
 
-then open <http://localhost:8765/?t=Space%20Song&a=Beach%20House&i=998474199&c=GB&f=vinyl>.
+then open <http://localhost:8765/listen/?t=Space%20Song&a=Beach%20House&i=998474199&c=GB&f=vinyl>.
